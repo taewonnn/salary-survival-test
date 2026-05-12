@@ -1,5 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { AD_KEYS } from '../adConfig';
 
 interface InlineAdProps {
   adGroupId: string;
@@ -7,6 +8,10 @@ interface InlineAdProps {
   tone?: 'blackAndWhite' | 'grey';
   variant?: 'expanded' | 'card';
   impressFallbackOnMount?: boolean;
+  onAdRendered?: (payload: unknown) => void;
+  onAdImpression?: (payload: unknown) => void;
+  onNoFill?: (payload: unknown) => void;
+  onAdFailedToRender?: (payload: unknown) => void;
 }
 
 let InlineAd: React.ComponentType<InlineAdProps> | null = null;
@@ -19,19 +24,47 @@ try {
   // @apps-in-toss/framework not installed
 }
 
-const BANNER_AD_ID = 'ait-ad-test-banner-id';
-
 export function BannerAd() {
-  if (!InlineAd) return null;
+  if (InlineAd) {
+    return (
+      <View style={styles.container}>
+        <InlineAd
+          adGroupId={AD_KEYS.banner}
+          theme="dark"
+          tone="blackAndWhite"
+          impressFallbackOnMount={true}
+        />
+      </View>
+    );
+  }
 
   return (
-    <View style={{ width: '100%', height: 96, overflow: 'hidden' }}>
-      <InlineAd
-        adGroupId={BANNER_AD_ID}
-        theme="dark"
-        tone="blackAndWhite"
-        impressFallbackOnMount={true}
-      />
+    <View style={styles.placeholder}>
+      <Text style={styles.placeholderText}>AD</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: 96,
+    overflow: 'hidden',
+  },
+  placeholder: {
+    width: '100%',
+    height: 96,
+    backgroundColor: '#1B2035',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#2A3050',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholderText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#3B4A6B',
+    letterSpacing: 1.5,
+  },
+});

@@ -126,6 +126,8 @@ function IndexPage() {
             </View>
           </View>
 
+          <BannerAd />
+
           <TouchableOpacity
             style={[styles.submitBtn, !isValid && styles.submitBtnDisabled]}
             onPress={handleSubmit}
@@ -134,8 +136,6 @@ function IndexPage() {
           >
             <Text style={styles.submitText}>결과 보기</Text>
           </TouchableOpacity>
-
-          <BannerAd />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

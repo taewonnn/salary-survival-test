@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
   type RegionResult,
 } from '../src/survival';
 import { BannerAd } from '../src/components/BannerAd';
+import { AD_KEYS, FREE_RETRY_LIMIT } from '../src/adConfig';
 
 export const Route = createRoute('/result', {
   component: ResultPage,
@@ -46,20 +47,19 @@ try {
   // @apps-in-toss/framework not installed
 }
 
-const FULLSCREEN_AD_ID = 'ait.dev.43daa14da3ae487b';
-const FREE_RETRY_LIMIT = 3;
+const FULLSCREEN_AD_ID = AD_KEYS.fullscreen;
 
 function ResultPage() {
   const navigation = Route.useNavigation();
   const input = getInput();
   const retryCount = getRetryCount();
-  const needsAd = retryCount >= FREE_RETRY_LIMIT && loadFullScreenAd !== null;
+  const shouldShowAdGate = retryCount >= FREE_RETRY_LIMIT;
+  const canShowAd = shouldShowAdGate && loadFullScreenAd !== null;
 
   const [isAdLoaded, setIsAdLoaded] = useState(false);
-  const unregisterRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    if (!needsAd || !loadFullScreenAd) return;
+    if (!canShowAd || !loadFullScreenAd) return;
 
     const unregister = loadFullScreenAd({
       options: { adGroupId: FULLSCREEN_AD_ID },
@@ -69,12 +69,8 @@ function ResultPage() {
       onError: () => {},
     });
 
-    unregisterRef.current = unregister;
-    return () => {
-      unregister();
-      unregisterRef.current = null;
-    };
-  }, [needsAd]);
+    return unregister;
+  }, [canShowAd]);
 
   if (!input) {
     navigation.navigate('/');
@@ -84,13 +80,14 @@ function ResultPage() {
   const results = calcAllRegions(input);
 
   function handleRetry() {
-    if (!needsAd) {
+    if (!shouldShowAdGate) {
       incrementRetry();
       navigation.goBack();
       return;
     }
 
-    if (!showFullScreenAd || !isAdLoaded) {
+    if (!canShowAd || !showFullScreenAd || !isAdLoaded) {
+      incrementRetry();
       navigation.goBack();
       return;
     }
@@ -104,6 +101,7 @@ function ResultPage() {
         }
       },
       onError: () => {
+        incrementRetry();
         navigation.goBack();
       },
     });
@@ -134,9 +132,9 @@ function ResultPage() {
   const summaryText = `${input.salary.toLocaleString('ko-KR')}만원 · ${spendingLabel} · ${housingLabel}${carLabel}`;
 
   const retryLabel =
-    needsAd && !isAdLoaded
+    shouldShowAdGate && canShowAd && !isAdLoaded
       ? '광고 로딩 중...'
-      : needsAd
+      : shouldShowAdGate
         ? '광고 보고 다시하기'
         : '다시하기';
 
@@ -162,18 +160,18 @@ function ResultPage() {
           <Text style={styles.shareBtnText}>결과 공유하기</Text>
         </TouchableOpacity>
 
+        <BannerAd />
+
         <TouchableOpacity
           style={styles.retryBtn}
           onPress={handleRetry}
           activeOpacity={0.8}
-          disabled={needsAd && !isAdLoaded}
+          disabled={canShowAd && !isAdLoaded}
         >
-          <Text style={[styles.retryBtnText, needsAd && !isAdLoaded && styles.retryBtnTextDisabled]}>
+          <Text style={[styles.retryBtnText, canShowAd && !isAdLoaded && styles.retryBtnTextDisabled]}>
             {retryLabel}
           </Text>
         </TouchableOpacity>
-
-        <BannerAd />
       </ScrollView>
     </SafeAreaView>
   );
