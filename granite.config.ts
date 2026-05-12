@@ -4,6 +4,9 @@ import { defineConfig } from '@granite-js/react-native/config';
 
 export default defineConfig({
   appName: 'salary-survival-test',
-  scheme: 'granite',
-  plugins: [router(), hermes()],
+  scheme: 'intoss',
+  plugins: [
+    router(),
+    hermes(),
+  ],
 });
