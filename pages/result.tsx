@@ -113,11 +113,21 @@ function ResultPage() {
     const worst = sorted[sorted.length - 1]!;
     const salaryStr = input!.salary.toLocaleString('ko-KR');
 
-    const message =
+    let shareLink = '';
+    try {
+      const { getTossShareLink } = await import('@apps-in-toss/native-modules');
+      shareLink = await getTossShareLink('intoss://salary-survival-test');
+    } catch {
+      // 링크 생성 실패 시 텍스트만 공유
+    }
+
+    const baseMessage =
       `💰 내 월급 ${salaryStr}만원으로 지역별 생존 테스트\n\n` +
       `✅ ${best.name}: ${best.label}\n` +
       `❌ ${worst.name}: ${worst.label}\n\n` +
-      `나도 테스트해봐 👇`;
+      `너도 테스트해봐 👇`;
+
+    const message = shareLink ? `${baseMessage}\n${shareLink}` : baseMessage;
 
     try {
       await Share.share({ message });
