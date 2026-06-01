@@ -115,7 +115,8 @@ function ResultPage() {
 
     let shareLink = '';
     try {
-      const { getTossShareLink } = await import('@apps-in-toss/native-modules');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { getTossShareLink } = require('@apps-in-toss/native-modules');
       shareLink = await getTossShareLink('intoss://salary-survival-test');
     } catch {
       // 링크 생성 실패 시 텍스트만 공유

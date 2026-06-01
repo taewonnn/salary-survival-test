@@ -61,9 +61,10 @@ function IndexPage() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <Text style={styles.title}>내 월급 생존 가능{'\n'}지역 테스트</Text>
-            <Text style={styles.subtitle}>어느 지역까지 버틸 수 있을까?</Text>
+          <View style={styles.intro}>
+            <Text style={styles.eyebrow}>월급 생활비 테스트</Text>
+            <Text style={styles.title}>내 월급으로{'\n'}어디까지 버틸 수 있을까?</Text>
+            <Text style={styles.subtitle}>세후 월급과 생활 패턴으로 지역별 생존 가능성을 가볍게 확인해보세요.</Text>
           </View>
 
           <View style={styles.section}>
@@ -175,24 +176,31 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingTop: 20,
     paddingBottom: 40,
     gap: 28,
   },
-  header: {
-    gap: 8,
+  intro: {
+    gap: 10,
+    paddingTop: 4,
+  },
+  eyebrow: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#60A5FA',
+    letterSpacing: 0.6,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '700',
     color: '#F3F4F6',
     letterSpacing: -0.5,
-    lineHeight: 32,
+    lineHeight: 36,
   },
   subtitle: {
     fontSize: 14,
     color: '#9CA3AF',
-    marginTop: 2,
+    lineHeight: 21,
   },
   section: {
     gap: 12,
